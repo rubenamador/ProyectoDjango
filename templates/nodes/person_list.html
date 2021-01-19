@@ -1,0 +1,36 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque de cabecera -->
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr class="danger">
+			<td>ID</td>
+			<td>Nombre</td>
+			<td>Apellido</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if object_list %}
+		{% for person in object_list %}
+		<tr>
+			<td>{{ person.id }}</td>
+			<td>{{ person.name }}</td>
+			<td>{{ person.surname }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de personas</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
