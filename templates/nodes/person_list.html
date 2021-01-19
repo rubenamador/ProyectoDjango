@@ -3,6 +3,17 @@
 
 <!-- Bloque de cabecera -->
 {% block header %}
+<style>
+div.btn-group btn-group-justified {
+	position: absolute;
+	right: 200px;
+}
+</style>
+
+<div class="btn-group btn-group-justified" style="width:100%">
+	<a href="{% url 'Nodes:deleteAllPeople' %}" class="btn btn-default">Borrar personas</a>
+</div>
+<div style="visibility: hidden">salto de linea</div>
 {% endblock %}
 
 <!-- Bloque del contenido -->	

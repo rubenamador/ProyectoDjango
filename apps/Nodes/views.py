@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
@@ -59,3 +59,9 @@ class PersonDelete(DeleteView):
 	model = Person
 	template_name = 'nodes/person_delete.html'
 	success_url = reverse_lazy('Nodes:listPerson')
+
+def all_people_delete(request):
+	if request.method == 'POST':
+		Person.objects.all().delete()
+		return redirect('Nodes:listPerson')
+	return render(request, 'nodes/all_people_delete.html')
