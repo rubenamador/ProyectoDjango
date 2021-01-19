@@ -13,6 +13,7 @@
 			<td>ID</td>
 			<td>Emisor de llamada</td>
 			<td>Receptor de llamada</td>
+			<td>Acciones</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -22,6 +23,11 @@
 			<td>{{ call.id }}</td>
 			<td>{{ call.phone_1 }}</td>
 			<td>{{ call.phone_2 }}</td>
+			<td>
+				<a class="btn btn-primary btn-sm" 
+				href="{% url 'Links:editCall' call.id %}"
+				>Editar</a>
+			</td>
 		</tr>
 		{% endfor %}
 		{% else %}

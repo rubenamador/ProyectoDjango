@@ -42,3 +42,15 @@ class PersonUpdate(UpdateView):
 	form_class = PersonForm
 	template_name = 'nodes/form.html'
 	success_url = reverse_lazy('Nodes:listPerson')
+
+class PhoneUpdate(UpdateView):
+	model = Phone
+	form_class = PhoneForm
+	template_name = 'nodes/form.html'
+	success_url = reverse_lazy('Nodes:listPhone')
+
+class MeetingPointUpdate(UpdateView):
+	model = MeetingPoint
+	form_class = MeetingPointForm
+	template_name = 'nodes/form.html'
+	success_url = reverse_lazy('Nodes:listMeetingPoint')

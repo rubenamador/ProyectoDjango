@@ -13,6 +13,7 @@
 			<td>ID</td>
 			<td>Persona</td>
 			<td>Punto de Reunion</td>
+			<td>Acciones</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -22,6 +23,11 @@
 			<td>{{ meeting.id }}</td>
 			<td>{{ meeting.person }}</td>
 			<td>{{ meeting.point }}</td>
+			<td>
+				<a class="btn btn-primary btn-sm" 
+				href="{% url 'Links:editMeeting' meeting.id %}"
+				>Editar</a>
+			</td>
 		</tr>
 		{% endfor %}
 		{% else %}

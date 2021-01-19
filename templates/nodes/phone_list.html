@@ -12,6 +12,7 @@
 		<tr class="danger">
 			<td>Numero</td>
 			<td>Propietario</td>
+			<td>Acciones</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -20,6 +21,11 @@
 		<tr>
 			<td>{{ phone.number }}</td>
 			<td>{{ phone.owner }}</td>
+			<td>
+				<a class="btn btn-primary btn-sm" 
+				href="{% url 'Nodes:editPhone' phone.number %}"
+				>Editar</a>
+			</td>
 		</tr>
 		{% endfor %}
 		{% else %}

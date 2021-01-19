@@ -14,6 +14,7 @@
 			<td>Lugar</td>
 			<td>Fecha</td>
 			<td>Hora</td>
+			<td>Acciones</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -24,6 +25,11 @@
 			<td>{{ point.place }}</td>
 			<td>{{ point.date }}</td>
 			<td>{{ point.time }}</td>
+			<td>
+				<a class="btn btn-primary btn-sm" 
+				href="{% url 'Nodes:editMeetingPoint' point.id %}"
+				>Editar</a>
+			</td>
 		</tr>
 		{% endfor %}
 		{% else %}

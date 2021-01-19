@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, UpdateView
 
 from apps.Links.forms import CallForm, MeetingForm
 from apps.Links.models import Call, Meeting
@@ -22,6 +22,18 @@ class CallCreate(CreateView):
 	success_url = reverse_lazy('Links:listCall')
 
 class MeetingCreate(CreateView):
+	model = Meeting
+	form_class = MeetingForm
+	template_name = 'links/form.html'
+	success_url = reverse_lazy('Links:listMeeting')
+
+class CallUpdate(UpdateView):
+	model = Call
+	form_class = CallForm
+	template_name = 'links/form.html'
+	success_url = reverse_lazy('Links:listCall')
+
+class MeetingUpdate(UpdateView):
 	model = Meeting
 	form_class = MeetingForm
 	template_name = 'links/form.html'
