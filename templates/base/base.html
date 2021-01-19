@@ -24,14 +24,14 @@
 						<nav class="navbar navbar-default">
 							<div class="container-fluid">
 								<div class="navbar-header">
-									<a class="navbar-brand" href="#">Home</a>
+									<a class="navbar-brand" href="{% url 'Nodes:listPerson' %}">Home</a>
 								</div>
 							<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 								<ul class="nav navbar-nav">
 									<li class="dropdown">
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Grafos<span class="caret"></span></a>
 										<ul class="dropdown-menu" role="menu">
-											<li><a>Añadir Grafo</a></li>
+											<li><a href="{% url 'Graphs:newGraph' %}">Añadir Grafo</a></li>
 											<li><a href="{% url 'Graphs:listGraph' %}">Listar Grafos</a></li>
 										</ul>
 									</li>
@@ -40,18 +40,18 @@
 										<ul class="dropdown-menu" role="menu">
 											<li><a href="{% url 'Nodes:newPerson' %}">Añadir Persona</a></li>
 											<li><a href="{% url 'Nodes:listPerson' %}">Listar Personas</a></li>
-											<li><a>Añadir Telefono</a></li>
+											<li><a href="{% url 'Nodes:newPhone' %}">Añadir Telefono</a></li>
 											<li><a href="{% url 'Nodes:listPhone' %}">Listar Telefonos</a></li>
-											<li><a>Añadir Punto de Reunion</a></li>
+											<li><a href="{% url 'Nodes:newMeetingPoint' %}">Añadir Punto de Reunion</a></li>
 											<li><a href="{% url 'Nodes:listMeetingPoint' %}">Listar Puntos de Reunion</a></li>
 										</ul>
 									</li>
 									<li class="dropdown">
 										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Relaciones<span class="caret"></span></a>
 										<ul class="dropdown-menu" role="menu">
-											<li><a>Añadir Llamada</a></li>
+											<li><a href="{% url 'Links:newCall' %}">Añadir Llamada</a></li>
 											<li><a href="{% url 'Links:listCall' %}">Listar Llamadas</a></li>
-											<li><a>Añadir Reunion</a></li>
+											<li><a href="{% url 'Links:newMeeting' %}">Añadir Reunion</a></li>
 											<li><a href="{% url 'Links:listMeeting' %}">Listar Reuniones</a></li>
 										</ul>
 									</li>

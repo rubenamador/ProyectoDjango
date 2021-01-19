@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 
-from apps.Nodes.forms import PersonForm
+from apps.Nodes.forms import PersonForm, PhoneForm, MeetingPointForm
 from apps.Nodes.models import Person, Phone, MeetingPoint
 
 # Create your views here.
@@ -24,3 +24,15 @@ class PersonCreate(CreateView):
 	form_class = PersonForm
 	template_name = 'nodes/form.html'
 	success_url = reverse_lazy('Nodes:listPerson')
+
+class PhoneCreate(CreateView):
+	model = Phone
+	form_class = PhoneForm
+	template_name = 'nodes/form.html'
+	success_url = reverse_lazy('Nodes:listPhone')
+
+class MeetingPointCreate(CreateView):
+	model = MeetingPoint
+	form_class = MeetingPointForm
+	template_name = 'nodes/form.html'
+	success_url = reverse_lazy('Nodes:listMeetingPoint')
