@@ -1,0 +1,38 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque de cabecera -->
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr class="danger">
+			<td>ID</td>
+			<td>Lugar</td>
+			<td>Fecha</td>
+			<td>Hora</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if object_list %}
+		{% for point in object_list %}
+		<tr>
+			<td>{{ point.id }}</td>
+			<td>{{ point.place }}</td>
+			<td>{{ point.date }}</td>
+			<td>{{ point.time }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de puntos de reunion</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

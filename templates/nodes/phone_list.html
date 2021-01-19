@@ -1,0 +1,34 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque de cabecera -->
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr class="danger">
+			<td>Numero</td>
+			<td>Propietario</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if object_list %}
+		{% for phone in object_list %}
+		<tr>
+			<td>{{ phone.number }}</td>
+			<td>{{ phone.owner }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de telefonos</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

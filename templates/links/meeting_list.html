@@ -1,0 +1,36 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque de cabecera -->
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr class="danger">
+			<td>ID</td>
+			<td>Persona</td>
+			<td>Punto de Reunion</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if object_list %}
+		{% for meeting in object_list %}
+		<tr>
+			<td>{{ meeting.id }}</td>
+			<td>{{ meeting.person }}</td>
+			<td>{{ meeting.point }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de reuniones</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

@@ -1,0 +1,36 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque de cabecera -->
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<table class="table table-striped table-hover">
+	<thead>
+		<tr class="danger">
+			<td>ID</td>
+			<td>Emisor de llamada</td>
+			<td>Receptor de llamada</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if object_list %}
+		{% for call in object_list %}
+		<tr>
+			<td>{{ call.id }}</td>
+			<td>{{ call.phone_1 }}</td>
+			<td>{{ call.phone_2 }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de llamadas</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
