@@ -1,7 +1,15 @@
+{% load staticfiles %}<!-- Carga de archivos estaticos (CSS, JS..) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="UTF-8">	
+	<meta charset="UTF-8">
+	
+	<!-- Links de archivos CSS -->
+	{% block extrahead %}
+	{% endblock %}
+	
+	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	
 	<!-- Bloque del titulo -->
 	<title>{% block title %}Document{% endblock %}</title>	
 </head>
@@ -21,6 +29,14 @@
 	{% block footer %}
 	<h5>Soy del footer del base</h5>
 	{% endblock %}
-</div>	
+</div>
+
+	<!-- Links de archivos Javascript -->
+	{% block extrajs %}
+	{% endblock %}
+	
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	
 </body>
 </html>
