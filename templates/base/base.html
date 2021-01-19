@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">	
+	<!-- Bloque del titulo -->
+	<title>{% block title %}Document{% endblock %}</title>	
+</head>
+<body>
+<div class="container">	
+	<!-- Bloque de la cabecera -->
+	{% block header %}
+	{% include 'base/header.html' %}
+	{% endblock %}
+	
+	<!-- Bloque del contenido -->
+	{% block content %}
+	<h5>Este es el contenido del archivo base</h5>
+	{% endblock %}
+	
+	<!-- Bloque del pie de pagina -->
+	{% block footer %}
+	<h5>Soy del footer del base</h5>
+	{% endblock %}
+</div>	
+</body>
+</html>
