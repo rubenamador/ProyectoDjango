@@ -14,7 +14,64 @@
 	<title>{% block title %}Document{% endblock %}</title>	
 </head>
 <body>
-<div class="container">	
+<div class="container">
+	<!-- Barra de navegacion -->
+	{% block navbar %}
+		<div class="bs-docs-section clearfix">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="bs-component">
+						<nav class="navbar navbar-default">
+							<div class="container-fluid">
+								<div class="navbar-header">
+									<a class="navbar-brand" href="#">Home</a>
+								</div>
+							<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+								<ul class="nav navbar-nav">
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Grafos<span class="caret"></span></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a>Añadir Grafo</a></li>
+											<li><a>Listar Grafos</a></li>
+										</ul>
+									</li>
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Nodos<span class="caret"></span></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a>Añadir Persona</a></li>
+											<li><a>Listar Personas</a></li>
+											<li><a>Añadir Telefono</a></li>
+											<li><a>Listar Telefonos</a></li>
+											<li><a>Añadir Punto de Reunion</a></li>
+											<li><a>Listar Puntos de Reunion</a></li>
+										</ul>
+									</li>
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Relaciones<span class="caret"></span></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a>Añadir Llamada</a></li>
+											<li><a>Listar Llamadas</a></li>
+											<li><a>Añadir Reunion</a></li>
+											<li><a>Listar Reuniones</a></li>
+										</ul>
+									</li>
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Opciones<span class="caret"></span></a>
+										<ul class="dropdown-menu" role="menu">
+											<li><a>Admin</a></li>
+											<li><a>Salir</a></li>
+										</ul>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endblock %}
+	
 	<!-- Bloque de la cabecera -->
 	{% block header %}
 	{% include 'base/header.html' %}
