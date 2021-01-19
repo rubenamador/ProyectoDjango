@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, UpdateView
 
 from apps.Nodes.forms import PersonForm, PhoneForm, MeetingPointForm
 from apps.Nodes.models import Person, Phone, MeetingPoint
@@ -36,3 +36,9 @@ class MeetingPointCreate(CreateView):
 	form_class = MeetingPointForm
 	template_name = 'nodes/form.html'
 	success_url = reverse_lazy('Nodes:listMeetingPoint')
+
+class PersonUpdate(UpdateView):
+	model = Person
+	form_class = PersonForm
+	template_name = 'nodes/form.html'
+	success_url = reverse_lazy('Nodes:listPerson')

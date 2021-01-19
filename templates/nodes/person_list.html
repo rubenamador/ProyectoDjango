@@ -13,6 +13,7 @@
 			<td>ID</td>
 			<td>Nombre</td>
 			<td>Apellido</td>
+			<td>Acciones</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -22,6 +23,11 @@
 			<td>{{ person.id }}</td>
 			<td>{{ person.name }}</td>
 			<td>{{ person.surname }}</td>
+			<td>
+				<a class="btn btn-primary btn-sm" 
+				href="{% url 'Nodes:editPerson' person.id %}"
+				>Editar</a>
+			</td>
 		</tr>
 		{% endfor %}
 		{% else %}
