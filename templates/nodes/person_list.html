@@ -27,6 +27,9 @@
 				<a class="btn btn-primary btn-sm" 
 				href="{% url 'Nodes:editPerson' person.id %}"
 				>Editar</a>
+				<a class="btn btn-danger btn-sm" 
+				href="{% url 'Nodes:deletePerson' person.id %}"
+				>Eliminar</a>
 			</td>
 		</tr>
 		{% endfor %}

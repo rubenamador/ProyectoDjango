@@ -1,5 +1,5 @@
 from django.urls import re_path
-from apps.Nodes.views import PersonList, PersonCreate, PersonUpdate
+from apps.Nodes.views import PersonList, PersonCreate, PersonUpdate, PersonDelete
 from apps.Nodes.views import PhoneList, PhoneCreate, PhoneUpdate
 from apps.Nodes.views import MeetingPointList, MeetingPointCreate, MeetingPointUpdate
 
@@ -13,4 +13,5 @@ urlpatterns = [
 	re_path(r'^editPerson/(?P<pk>[\w|\W]+)/$', PersonUpdate.as_view(), name='editPerson'),
 	re_path(r'^editPhone/(?P<pk>[\w|\W]+)/$', PhoneUpdate.as_view(), name='editPhone'),
 	re_path(r'^editMeetingPoint/(?P<pk>[\w|\W]+)/$', MeetingPointUpdate.as_view(), name='editMeetingPoint'),
+	re_path(r'^deletePerson/(?P<pk>[\w|\W]+)/$', PersonDelete.as_view(), name='deletePerson'),
 ]
