@@ -18,6 +18,10 @@ from pymongo import MongoClient
 from random import randint
 import math
 
+import time
+import networkx as nx
+import pickle
+
 # Create your views here.
 
 class GraphList(ListView):
@@ -219,6 +223,111 @@ class DegreeGraph(ListView):
 		context['ownerships'] = phones
 		context['max_value'] = dict['max_value']
 		
+		return context
+
+class PathForm(FormView):
+	model = Graph
+	form_class = PersonForm
+	template_name = 'graphs/path_form.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(PathForm, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		context['people'] = Person.objects.all()
+		context['phones'] = Phone.objects.all()
+		context['points'] = MeetingPoint.objects.all()
+		context['form2'] = PhoneForm
+		context['form3'] = MeetingPointForm
+		return context
+		
+class PathView(ListView):
+	model = Graph
+	template_name = 'graphs/graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(PathView, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		pk2 = self.kwargs.get('pk2', 0)
+		source = get_model_object_by_id(pk2)
+		context['node'] = source
+		
+		pk3 = self.kwargs.get('pk3', 0)
+		dest = get_model_object_by_id(pk3)
+		context['dest'] = dest
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+
+		G = get_graph(people, phones, points, calls, meetings)
+		try:
+			path = nx.shortest_path(G, source=source , target=dest)
+		except nx.NetworkXNoPath:
+			path = []
+		
+		dict = {}
+		dict['people'] = []
+		dict['phones'] = []
+		dict['points'] = []
+		dict['calls'] = []
+		dict['meetings'] = []
+		dict['ownerships'] = []
+		add_nodes_of_path(path, dict, calls, meetings, phones)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = dict['calls']
+		context['meetings'] = dict['meetings']
+		context['ownerships'] = dict['ownerships']
+		
+		return context
+
+class ClosenessPersonForm(FormView):
+	model = Graph
+	form_class = PersonForm
+	template_name = 'graphs/person_form.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(ClosenessPersonForm, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		context['people'] = Person.objects.all()
+		return context
+		
+class ClosenessPhoneForm(FormView):
+	model = Graph
+	form_class = PhoneForm
+	template_name = 'graphs/phone_form.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(ClosenessPhoneForm, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		context['phones'] = Phone.objects.all()
+		return context
+		
+class ClosenessMeetingPointForm(FormView):
+	model = Graph
+	form_class = MeetingPointForm
+	template_name = 'graphs/meeting_point_form.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(ClosenessMeetingPointForm, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		context['meeting_points'] = MeetingPoint.objects.all()
 		return context
 
 #################################################################################
@@ -791,3 +900,169 @@ def search_graph_degree(people, phones, points, calls, meetings):
 	
 	dict['max_value'] = max_value
 	return dict
+
+def get_graph(people, phones, points, calls, meetings):
+	G = nx.Graph()
+	
+	for p in people:
+		G.add_node(p)
+	for p in phones:
+		G.add_node(p)
+	for p in points:
+		G.add_node(p)
+		
+	for l in calls:
+		G.add_edge(l.phone_1, l.phone_2)
+	for l in meetings:
+		G.add_edge(l.person, l.point)
+	for l in phones:
+		G.add_edge(l, l.owner)
+	
+	return G
+
+def add_nodes_of_path(path, dict, calls, meetings, phones):
+	for i in range(len(path)):
+		if(str(path[i]._meta.model) == "<class 'apps.Nodes.models.Person'>"):
+			dict['people'].append(path[i])
+			if(i > 0):
+				if(str(path[i-1]._meta.model) == "<class 'apps.Nodes.models.MeetingPoint'>"):
+					for meeting in meetings:
+						if(meeting.person == path[i] and meeting.point == path[i-1]):
+							dict['meetings'].append(meeting)
+				elif(str(path[i-1]._meta.model) == "<class 'apps.Nodes.models.Phone'>"):
+					for phone in phones:
+						if(phone.owner == path[i] and phone == path[i-1]):
+							dict['ownerships'].append(phone)
+		elif(str(path[i]._meta.model) == "<class 'apps.Nodes.models.Phone'>"):
+			dict['phones'].append(path[i])
+			if(i > 0):
+				if(str(path[i-1]._meta.model) == "<class 'apps.Nodes.models.Phone'>"):
+					for call in calls:
+						if(call.phone_1 == path[i] and call.phone_2 == path[i-1]):
+							dict['calls'].append(call)
+						elif(call.phone_2 == path[i] and call.phone_1 == path[i-1]):
+							dict['calls'].append(call)
+				elif(str(path[i-1]._meta.model) == "<class 'apps.Nodes.models.Person'>"):
+					for phone in phones:
+						if(phone == path[i] and phone.owner == path[i-1]):
+							dict['ownerships'].append(phone)
+		elif(str(path[i]._meta.model) == "<class 'apps.Nodes.models.MeetingPoint'>"):
+			dict['points'].append(path[i])
+			if(i > 0):
+				if(str(path[i-1]._meta.model) == "<class 'apps.Nodes.models.Person'>"):
+					for meeting in meetings:
+						if(meeting.point == path[i] and meeting.person == path[i-1]):
+							dict['meetings'].append(meeting)
+
+def quit_repeat_items(dict):
+	for key in dict.keys():
+		if(type(dict[key]) is list):
+			auxList = []
+			for item in dict[key]:
+				insert = True
+				for auxItem in auxList:
+					if(auxItem == item):
+						insert = False
+				if(insert == True):
+					auxList.append(item)
+			dict[key] = auxList
+	
+	return dict
+
+def get_model_object_by_id(pk):
+	try:
+		obj = Person.objects.get(id=pk)
+	except:
+		try:
+			obj = Phone.objects.get(number=pk)
+		except:
+			obj = MeetingPoint.objects.get(id=pk)
+	
+	return obj
+	
+"""
+def get_links(phones, calls, meetings):
+	links = []
+	for phone in phones:
+		link = {}
+		link["source"] = phone
+		link["dest"] = phone.owner
+		link["type"] = "ownership"
+		links.append(link)
+	for call in  calls:
+		link = {}
+		link["source"] = call.phone_1
+		link["dest"] = call.phone_2
+		link["type"] = "call"
+		links.append(link)
+	for meeting in meetings:
+		link = {}
+		link["source"] = meeting.person
+		link["dest"] = meeting.point
+		link["type"] = "meeting"
+		links.append(link)
+	
+	return links
+
+def get_linked_nodes(node, links):
+	linked_nodes = []
+	
+	for i in range(len(links)):
+		source = links[i]["source"]
+		dest = links[i]["dest"]
+		if(source == node):
+			linked_nodes.append(dest)
+		elif(dest == node):
+			linked_nodes.append(source)
+			
+	return linked_nodes
+	
+
+def search_path(source, dest, links, path, cola, pozo, firstSource):
+	#print("SOURCE")
+	#print(source)
+	pozo.append(source)
+	if (len(cola) > 0):
+		del cola[0]
+	
+	#Mirar nodos conectados al nodo dado
+	linked_nodes = get_linked_nodes(source, links)
+	terminado = False
+	
+	for i in range(len(linked_nodes)):
+		#print("ITERACION " + str(i))
+		#print(linked_nodes[i])
+		#print(dest)
+		if (linked_nodes[i] == dest):
+			path.append(dest)
+			if (source != firstSource):
+				cola.clear()
+				pozo.clear()
+				search_path(firstSource, source, links, path, cola, pozo, firstSource)
+			else:
+				path.append(firstSource)
+			terminado = True
+			#print("PATH")
+			#print(path)
+		else:
+			#Guardar en una cola los nodos conectados
+			insert = True
+			for j in range(len(cola)):
+				if (cola[j] == linked_nodes[i]):
+					insert = False
+			for j in range(len(pozo)):
+				if (pozo[j] == linked_nodes[i]):
+					insert = False
+			
+			if (insert):
+				cola.append(linked_nodes[i])
+	
+	if (terminado == False):
+		#print("COLA")
+		#print(cola)
+		max = Person.objects.count() + Phone.objects.count() + MeetingPoint.objects.count()
+		if(len(cola) > 0): 
+			search_path(cola[0], dest, links, path, cola, pozo, firstSource)
+		#else:
+			#print("No existe camino entre " + str(firstSource) + " y " + str(dest))
+"""

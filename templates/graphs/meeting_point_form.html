@@ -1,0 +1,82 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque del contenido -->
+{% block content %}
+<form id="form">
+	{{ form.as_p }}
+</form>
+
+<button class="btn btn-success" onclick="getValue()">Aplicar metrica</button>
+
+<table class="table table-striped table-hover"></>
+	<thead>
+		<tr>
+			<td>ID</td>
+			<td>Lugar</td>
+			<td>Fecha</td>
+			<td>Hora</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if meeting_points %}
+		{% for point in meeting_points %}
+		<tr>
+			
+			<td>{{ point.id }}</td>
+			<td>{{ point.place }}</td>
+			<td>{{ point.date }}</td>
+			<td>{{ point.time }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de puntos de reunion</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+<script>
+
+function getValue() {
+	var x = document.getElementById("form");
+	var node = "";
+	var graph = "{{ graph }}"
+	console.log(graph)
+	
+	node = x.elements[0].value;
+	
+	//<p id="demo"></p>
+	//document.getElementById("demo").innerHTML = text;
+	if(node != "")
+	{
+		console.log(window.location.href);
+		if(window.location.href == 'http://127.0.0.1:8000/graphs/formDegreeMeetingPoint/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewDegreeMeetingPoint/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formClosenessMeetingPoint/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewCloseness/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formBetweenessMeetingPoint/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewBetweeness/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formEigenvectorMeetingPoint/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewEigenvectorMeetingPoint/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formHarmonyMeetingPoint/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewHarmony/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formKatzMeetingPoint/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewKatz/' + graph + '/' + node);
+		}
+	}
+}
+</script>
+
+
+{% endblock %}

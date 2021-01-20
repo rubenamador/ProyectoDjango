@@ -5,6 +5,7 @@ from apps.Graphs.views import GraphView
 from apps.Graphs.views import random_graph_create
 from apps.Graphs.views import DegreeForm, DegreePersonView, DegreePhoneView, DegreeMeetingPointView
 from apps.Graphs.views import DegreeGraph
+from apps.Graphs.views import PathForm, PathView
 
 urlpatterns = [
 	re_path(r'^newGraph$', GraphCreate.as_view(), name='newGraph'),
@@ -20,4 +21,6 @@ urlpatterns = [
 	re_path(r'^viewDegreePhone/(?P<pk>[\w|\W]+)/(?P<pk2>[\w|\W]+)/$', DegreePhoneView.as_view(), name='viewDegreePhone'),
 	re_path(r'^viewDegreeMeetingPoint/(?P<pk>[\w|\W]+)/(?P<pk2>[\w|\W]+)/$', DegreeMeetingPointView.as_view(), name='viewDegreeMeetingPoint'),
 	re_path(r'^graphDegree/(?P<pk>[\w|\W]+)/$', DegreeGraph.as_view(), name='graphDegree'),
+	re_path(r'^formPath/(?P<pk>[\w|\W]+)/$', PathForm.as_view(), name='formPath'),
+	re_path(r'^viewPath/(?P<pk>[\w|\W]+)/(?P<pk2>[\w|\W]+)/(?P<pk3>[\w|\W]+)/$', PathView.as_view(), name='viewPath'),
 ]

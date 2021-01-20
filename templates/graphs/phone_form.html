@@ -1,0 +1,78 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque del contenido -->
+{% block content %}
+<form id="form">
+	{{ form.as_p }}
+</form>
+
+<button class="btn btn-success" onclick="getValue()">Aplicar metrica</button>
+
+<table class="table table-striped table-hover"></>
+	<thead>
+		<tr>
+			<td>Numero</td>
+			<td>Propietario</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if phones %}
+		{% for phone in phones %}
+		<tr>
+			
+			<td>{{ phone.number }}</td>
+			<td>{{ phone.owner }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de telefonos</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+<script>
+
+function getValue() {
+	var x = document.getElementById("form");
+	var node = "";
+	var graph = "{{ graph }}"
+	console.log(graph)
+	
+	node = x.elements[0].value;
+	
+	//<p id="demo"></p>
+	//document.getElementById("demo").innerHTML = text;
+	if(node != "")
+	{
+		console.log(window.location.href);
+		if(window.location.href == 'http://127.0.0.1:8000/graphs/formDegreePhone/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewDegreePhone/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formClosenessPhone/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewCloseness/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formBetweenessPhone/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewBetweeness/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formEigenvectorPhone/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewEigenvectorPhone/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formHarmonyPhone/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewHarmony/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formKatzPhone/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewKatz/' + graph + '/' + node);
+		}
+	}
+}
+</script>
+
+
+{% endblock %}

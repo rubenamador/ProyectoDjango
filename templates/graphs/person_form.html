@@ -1,0 +1,79 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+<!-- Bloque del contenido -->
+{% block content %}
+<form id="form">
+	{{ form.as_p }}
+</form>
+<button class="btn btn-success" onclick="getValue()">Aplicar metrica</button>
+
+<table class="table table-striped table-hover"></>
+	<thead>
+		<tr>
+			<td>ID</td>
+			<td>Nombre</td>
+			<td>Apellido</td>
+		</tr>
+	</thead>
+	<tbody>
+		{% if people %}
+		{% for person in people %}
+		<tr>
+			
+			<td>{{ person.id }}</td>
+			<td>{{ person.name }}</td>
+			<td>{{ person.surname }}</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<h1>No hay registros de personas</h1>
+		{% endif %}
+	</tbody>
+</table>
+
+<script>
+
+function getValue() {
+	var x = document.getElementById("form");
+	var node = "";
+	var graph = "{{ graph }}"
+	console.log(graph)
+	
+	node = x.elements[0].value;
+	
+	//<p id="demo"></p>
+	//document.getElementById("demo").innerHTML = text;
+	if(node != "")
+	{
+		console.log(window.location.href);
+		if(window.location.href == 'http://127.0.0.1:8000/graphs/formDegreePerson/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewDegreePerson/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formClosenessPerson/'  + graph + '/')
+		{
+			window.location.assign('/graphs/viewCloseness/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formBetweenessPerson/'  + graph + '/' )
+		{
+			window.location.assign('/graphs/viewBetweeness/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formEigenvectorPerson/'  + graph + '/')
+		{
+			window.location.assign('/graphs/viewEigenvectorPerson/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formHarmonyPerson/'  + graph + '/')
+		{
+			window.location.assign('/graphs/viewHarmony/' + graph + '/' + node);
+		}
+		else if(window.location.href == 'http://127.0.0.1:8000/graphs/formKatzPerson/' + graph + '/')
+		{
+			window.location.assign('/graphs/viewKatz/' + graph + '/' + node);
+		}
+	}
+}
+</script>
+
+
+{% endblock %}
