@@ -78,7 +78,7 @@ class GraphView(ListView):
 		context['ownerships'] = Phone.objects.all()
 		
 		return context
-
+		
 def random_graph_create(request):
 	if request.method == 'POST':
 		person_size = Person.objects.count()
@@ -88,7 +88,7 @@ def random_graph_create(request):
 		random_graph(person_size, meeting_point_size, call_size, meeting_size)
 		return redirect('Graphs:listGraph')
 	return render(request, 'graphs/random_graph_create.html')
-
+	
 class DegreeForm(FormView):
 	model = Graph
 	form_class = PersonForm
@@ -196,6 +196,8 @@ class DegreeMeetingPointView(ListView):
 		context['value'] = dict['value']
 		
 		return context
+
+
 
 class DegreeGraph(ListView):
 	model = Graph
@@ -499,8 +501,8 @@ class KatzGraph(ListView):
 		context['max_value'] = dict['max_value']
 		
 		return context
-
-
+		
+		
 #################################################################################
 """ Functions used in views """
 #################################################################################
@@ -1071,7 +1073,34 @@ def search_graph_degree(people, phones, points, calls, meetings):
 	
 	dict['max_value'] = max_value
 	return dict
-
+	
+def search_nxgraph_degree(people, phones, points, calls, meetings):
+	G = get_graph(people, phones, points, calls, meetings)
+	centrality = nx.degree_centrality(G)
+	#print(centrality[node])
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = round(centrality[person], 2)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = round(centrality[phone], 2)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = round(centrality[point], 2)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
 
 def search_closeness(node, people, phones, points, calls, meetings):
 	value = 0
@@ -1113,8 +1142,37 @@ def search_graph_closeness(people, phones, points, calls, meetings):
 			max_value = value
 			
 	dict['max_value'] = max_value
-	return dict
+	return dict			
+			
 
+def search_nxgraph_closeness(people, phones, points, calls, meetings):
+	G = get_graph(people, phones, points, calls, meetings)
+	centrality = nx.closeness_centrality(G)
+	#print(centrality[node])
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = round(centrality[person], 2)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = round(centrality[phone], 2)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = round(centrality[point], 2)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
+	
 def search_betweeness(node, paths):
 	betweeness_paths = []
 	for path in paths:
@@ -1150,7 +1208,35 @@ def search_graph_betweeness(people, phones, points, calls, meetings):
 	
 	dict['max_value'] = max_value
 	return dict
-
+	
+def search_nxgraph_betweeness(people, phones, points, calls, meetings):
+	G = get_graph(people, phones, points, calls, meetings)
+	centrality = nx.betweenness_centrality(G)
+	#print(centrality[node])
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = round(centrality[person], 2)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = round(centrality[phone], 2)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = round(centrality[point], 2)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
+	
 def search_eigenvector(node, people, phones, points, calls, meetings):
 	all_degrees_sum = get_degrees_sum(people, phones, points, calls, meetings)
 	all_eigenvalues_sum = get_eigenvalues_sum(all_degrees_sum, people, phones, points, calls, meetings)
@@ -1202,6 +1288,34 @@ def search_graph_eigenvector(people, phones, points, calls, meetings):
 	dict['max_value'] = max_value
 	return dict
 
+def search_nxgraph_eigenvector(people, phones, points, calls, meetings):
+	G = get_graph(people, phones, points, calls, meetings)
+	centrality = nx.eigenvector_centrality(G)
+	#print(centrality[node])
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = round(centrality[person], 2)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = round(centrality[phone], 2)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = round(centrality[point], 2)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
+	
 def search_harmonic_centrality(node, people, phones, points, calls, meetings):
 	value = 0
 	number_of_nodes = len(people) + len(phones) + len(points) - 1
@@ -1244,7 +1358,7 @@ def search_graph_harmony(people, phones, points, calls, meetings):
 			
 	dict['max_value'] = max_value
 	return dict
-
+	
 def search_katz_centrality(node, people, phones, points, calls, meetings):
 	nodes_by_distance = {}
 	max_len = 0
@@ -1299,7 +1413,35 @@ def search_graph_katz(people, phones, points, calls, meetings):
 	
 	dict['max_value'] = max_value
 	return dict
-
+	
+def search_nxgraph_katz(people, phones, points, calls, meetings):
+	G = get_graph(people, phones, points, calls, meetings)
+	centrality = nx.katz_centrality(G)
+	#print(centrality[node])
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = round(centrality[person], 2)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = round(centrality[phone], 2)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = round(centrality[point], 2)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
+	
 def get_graph(people, phones, points, calls, meetings):
 	G = nx.Graph()
 	
@@ -1317,8 +1459,9 @@ def get_graph(people, phones, points, calls, meetings):
 	for l in phones:
 		G.add_edge(l, l.owner)
 	
-	return G
-
+	return G		
+			
+	
 def add_nodes_of_path(path, dict, calls, meetings, phones):
 	for i in range(len(path)):
 		if(str(path[i]._meta.model) == "<class 'apps.Nodes.models.Person'>"):
@@ -1380,8 +1523,8 @@ def get_all_paths_between_models(G, paths, nodes_type1, nodes_type2):
 				except nx.NetworkXNoPath:
 					path = []
 				if(len(path) > 0):
-					paths.append(path)
-
+					paths.append(path)					
+	
 def get_degrees_sum(people, phones, points, calls, meetings):
 	sum = 0
 	
@@ -1396,7 +1539,7 @@ def get_degrees_sum(people, phones, points, calls, meetings):
 		sum += value
 	
 	return sum
-
+	
 def get_eigenvalues_sum(all_degrees_sum, people, phones, points, calls, meetings):
 	sum = 0
 	
@@ -1411,7 +1554,7 @@ def get_eigenvalues_sum(all_degrees_sum, people, phones, points, calls, meetings
 		sum += eigenvalue
 	
 	return sum
-
+	
 def get_eigenvalue(node, all_degrees_value, people, phones, points, calls, meetings):
 	type_node = str(node._meta.model)
 	
@@ -1439,7 +1582,7 @@ def get_eigenvalue(node, all_degrees_value, people, phones, points, calls, meeti
 	
 	eigenvalue = round((sum / all_degrees_value), 2)
 	return eigenvalue
-
+	
 def quit_repeat_items(dict):
 	for key in dict.keys():
 		if(type(dict[key]) is list):
@@ -1454,7 +1597,7 @@ def quit_repeat_items(dict):
 			dict[key] = auxList
 	
 	return dict
-
+	
 def get_model_object_by_id(pk):
 	try:
 		obj = Person.objects.get(id=pk)
