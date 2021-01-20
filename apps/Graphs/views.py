@@ -193,6 +193,34 @@ class DegreeMeetingPointView(ListView):
 		
 		return context
 
+class DegreeGraph(ListView):
+	model = Graph
+	template_name = 'graphs/centrality_graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(DegreeGraph, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		
+		dict = search_graph_degree(people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = calls
+		context['meetings'] = meetings
+		context['ownerships'] = phones
+		context['max_value'] = dict['max_value']
+		
+		return context
+
 #################################################################################
 """ Functions used in views """
 #################################################################################
@@ -706,4 +734,60 @@ def search_point_degree(node, people, phones, points, calls, meetings):
 			dict['people'].append(meeting.person)
 			dict['value'] += 1
 	
+	return dict
+
+def search_degree(node, phones, calls, meetings):
+	value = 0
+	node_id = None
+	node_type = str(node._meta.model)
+	
+	if(node_type == "<class 'apps.Nodes.models.Person'>" or node_type == "<class 'apps.Nodes.models.MeetingPoint'>"):
+		node_id = node.id
+	elif(node_type == "<class 'apps.Nodes.models.Phone'>"):
+		node_id = node.number
+	
+	for phone in phones:
+		if(phone.number == node_id):
+			value += 1
+		if(phone.owner.id == node_id):
+			value += 1
+			
+	for meeting in meetings:
+		if(meeting.person.id == node_id):
+			value += 1
+		if(meeting.point.id == node_id):
+			value += 1
+			
+	for call in calls:
+		if(call.phone_1.number == node_id):
+			value += 1
+		if(call.phone_2.number == node_id):
+			value += 1
+			
+	return value
+
+	
+def search_graph_degree(people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = search_degree(person, phones, calls, meetings)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = search_degree(phone, phones, calls, meetings)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = search_degree(point, phones, calls, meetings)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
 	return dict

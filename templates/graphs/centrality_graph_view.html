@@ -150,9 +150,10 @@
 {% for person in people %}
 	<!-- <div>{{ link.id }}</div> -->
 	<script>
-		//nodo = document.getElementById("node").textContent;
+		//nodo = document.getElementById("node").textContent;)
 		nodo = "{{ person.name }} ({{ person.id }})";
-		graph["nodes"].push({"name": nodo, "type": "person"});
+		valor = "{{ person.value }}";
+		graph["nodes"].push({"name": nodo, "type": "person", "value": valor});
 		//alert('llega aqui 1');
 	</script>
 {% endfor %}
@@ -162,7 +163,8 @@
 	<script>
 		//nodo = document.getElementById("node").textContent;)
 		nodo = "{{ phone.number }}";
-		graph["nodes"].push({"name": nodo, "type": "phone"});
+		valor = "{{ phone.value }}";
+		graph["nodes"].push({"name": nodo, "type": "phone", "value": valor});
 	</script>
 		
 	<!--{% for person in people %}
@@ -182,7 +184,8 @@
 	<script>
 		//nodo = document.getElementById("node").textContent;)
 		nodo = "{{ point.place }} ({{ point.id }})";
-		graph["nodes"].push({"name": nodo, "type": "point"});
+		valor = "{{ point.value }}";
+		graph["nodes"].push({"name": nodo, "type": "point", "value": valor});
 		//alert('llega aqui 1');
 	</script>
 {% endfor %}
@@ -269,7 +272,7 @@ canvas
 			.subject(dragsubject)
 			.on("start", dragstarted)
 			.on("drag", dragged));
-	//.on("end", dragended));//Si comento esto solo se mueve un nodo
+	//.on("end", dragended));
 
 function update() {
 	ctx.clearRect(0, 0, width, height);
@@ -321,13 +324,32 @@ function zoom() {
 function drawNode(d) {
 	//console.log("D");
 	//console.log(d.name);
-	color = "";
-	if(d.type == "phone"){
-		color = "DodgerBlue"
-	}else if(d.type == "person"){
-		color = "Orange"
-	}else if(d.type == "point"){
-		color = "Green"
+	color = "White";
+	max_value = "{{ max_value }}"
+	if(d.value <= 0*max_value){
+		color = "#0000ff"
+	}else if(d.value > 0*max_value && d.value <= 0.1*max_value){
+		color = "#0080ff"
+	}else if(d.value > 0.1*max_value && d.value <= 0.2*max_value){
+		color = "#00bfff"
+	}else if(d.value > 0.2*max_value && d.value <= 0.3*max_value){
+		color = "#00ffff"
+	}else if(d.value > 0.3*max_value && d.value <= 0.4*max_value){
+		color = "#00bfbf"
+	}else if(d.value > 0.4*max_value && d.value <= 0.5*max_value){
+		color = "#00ff40"
+	}else if(d.value > 0.5*max_value && d.value <= 0.6*max_value){
+		color = "#80ff00"
+	}else if(d.value > 0.6*max_value && d.value <= 0.7*max_value){
+		color = "#bfff00"
+	}else if(d.value > 0.7*max_value && d.value <= 0.8*max_value){
+		color = "#ffff00"
+	}else if(d.value > 0.8*max_value && d.value <= 0.9*max_value){
+		color = "#ffbf00"
+	}else if(d.value > 0.9*max_value && d.value < max_value){
+		color = "#ff8000"
+	}else if(d.value >= max_value){
+		color = "#ff0000"
 	}
 	
 	ctx.beginPath();
@@ -337,7 +359,7 @@ function drawNode(d) {
 	ctx.fill();
 	ctx.fillStyle = 'Black';
 	ctx.font = "15px Georgia";
-	ctx.fillText(d.name, d.x, d.y + 30);
+	ctx.fillText(d.value + ", " + d.name, d.x, d.y + 30);
 }
 
 function drawLink(l) {
@@ -358,16 +380,6 @@ function drawLink(l) {
 	ctx.lineTo(l.target.x, l.target.y);
 	ctx.stroke();
 }
-
-//document.getElementById("network").ondblclick = function() {myFunction()};
-
-/*
-function myFunction() {
-//Mostrar un menu
-console.log("aqui");
-document.getElementById("node-menu").style = "visibility:visible";
-//console.log("d.node");
-}*/
 
 update();
 
