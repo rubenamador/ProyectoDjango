@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
 from rest_framework.views import APIView
 
-from apps.Graphs.forms import GraphForm
+from apps.Graphs.forms import GraphForm, PersonForm, PhoneForm, MeetingPointForm
 from apps.Graphs.models import Graph
 from apps.Graphs.serializers import GraphSerializer
 
@@ -84,6 +84,114 @@ def random_graph_create(request):
 		random_graph(person_size, meeting_point_size, call_size, meeting_size)
 		return redirect('Graphs:listGraph')
 	return render(request, 'graphs/random_graph_create.html')
+
+class DegreeForm(FormView):
+	model = Graph
+	form_class = PersonForm
+	template_name = 'graphs/degree_form.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(DegreeForm, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		context['people'] = Person.objects.all()
+		context['phones'] = Phone.objects.all()
+		context['points'] = MeetingPoint.objects.all()
+		context['form2'] = PhoneForm
+		context['form3'] = MeetingPointForm
+		return context
+	
+class DegreePersonView(ListView):
+	model = Graph
+	template_name = 'graphs/graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(DegreePersonView, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		pk2 = self.kwargs.get('pk2', 0)
+		node = Person.objects.get(id=pk2)
+		context['node'] = node
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		dict = search_person_degree(node, people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = dict['calls']
+		context['meetings'] = dict['meetings']
+		context['ownerships'] = dict['ownerships']
+		context['value'] = dict['value']
+		
+		return context
+		
+class DegreePhoneView(ListView):
+	model = Graph
+	template_name = 'graphs/graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(DegreePhoneView, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		pk2 = self.kwargs.get('pk2', 0)
+		node = Phone.objects.get(number=pk2)
+		context['node'] = node
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		dict = search_phone_degree(node, people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = dict['calls']
+		context['meetings'] = dict['meetings']
+		context['ownerships'] = dict['ownerships']
+		context['value'] = dict['value']
+		
+		return context
+		
+class DegreeMeetingPointView(ListView):
+	model = Graph
+	template_name = 'graphs/graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(DegreeMeetingPointView, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		pk2 = self.kwargs.get('pk2', 0)
+		node = MeetingPoint.objects.get(id=pk2)
+		context['node'] = node
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		dict = search_point_degree(node, people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = dict['calls']
+		context['meetings'] = dict['meetings']
+		context['ownerships'] = dict['ownerships']
+		context['value'] = dict['value']
+		
+		return context
 
 #################################################################################
 """ Functions used in views """
@@ -520,3 +628,82 @@ def get_random_point():
 	point = points[index]
 	
 	return point
+
+def search_person_degree(node, people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	dict['calls'] = []
+	dict['meetings'] = []
+	dict['ownerships'] = []
+	dict['value'] = 0
+	
+	for person in people:
+		if(person.id == node.id):
+			dict['people'].append(person)
+	
+	for phone in phones:
+		if(phone.owner.id == node.id):
+			dict['phones'].append(phone)
+			dict['ownerships'].append(phone)
+			dict['value'] += 1
+	
+	for meeting in meetings:
+		if(meeting.person.id == node.id):
+			dict['meetings'].append(meeting)
+			dict['points'].append(meeting.point)
+			dict['value'] += 1
+	
+	return dict
+
+def search_phone_degree(node, people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	dict['calls'] = []
+	dict['meetings'] = []
+	dict['ownerships'] = []
+	dict['value'] = 0
+	
+	for phone in phones:
+		if(phone.number == node.number):
+			dict['phones'].append(phone)
+			dict['ownerships'].append(phone)
+			dict['people'].append(phone.owner)
+			dict['value'] += 1
+	
+	for call in calls:
+		if(call.phone_1.number == node.number):
+			dict['calls'].append(call)
+			dict['phones'].append(call.phone_2)
+			dict['value'] += 1
+		if(call.phone_2.number == node.number):
+			dict['calls'].append(call)
+			dict['phones'].append(call.phone_1)
+			dict['value'] += 1
+	
+	return dict
+
+def search_point_degree(node, people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	dict['calls'] = []
+	dict['meetings'] = []
+	dict['ownerships'] = []
+	dict['value'] = 0
+	
+	for point in points:
+		if(point.id == node.id):
+			dict['points'].append(point)
+	
+	for meeting in meetings:
+		if(meeting.point.id == node.id):
+			dict['meetings'].append(meeting)
+			dict['people'].append(meeting.person)
+			dict['value'] += 1
+	
+	return dict
