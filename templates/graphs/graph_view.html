@@ -34,7 +34,7 @@
 	<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
 	<ul class="dropdown-menu" style="background-color:#df691a">
 		<li><a id="close_path" href="{% url 'Graphs:formPath' graph.id %}">Buscar Camino</a></li>
-		<li><a id="close_path" href="#">Representar Grafo Completo</a></li>
+		<li><a id="close_path" href="{% url 'Graphs:graphCloseness' graph.id %}">Representar Grafo Completo</a></li>
 	</ul>
 </div>
 <div class="btn-group">

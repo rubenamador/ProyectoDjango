@@ -330,6 +330,64 @@ class ClosenessMeetingPointForm(FormView):
 		context['meeting_points'] = MeetingPoint.objects.all()
 		return context
 
+class ClosenessView(ListView):
+	model = Graph
+	template_name = 'graphs/graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(ClosenessView, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		pk2 = self.kwargs.get('pk2', 0)
+		node = get_model_object_by_id(pk2)
+		context['node'] = node
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		dict = search_closeness(node, people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = dict['calls']
+		context['meetings'] = dict['meetings']
+		context['ownerships'] = dict['ownerships']
+		context['value'] = dict['value']
+		
+		return context
+
+class ClosenessGraph(ListView):
+	model = Graph
+	template_name = 'graphs/centrality_graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(ClosenessGraph, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		
+		dict = search_graph_closeness(people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = calls
+		context['meetings'] = meetings
+		context['ownerships'] = phones
+		context['max_value'] = dict['max_value']
+		
+		return context
+
 #################################################################################
 """ Functions used in views """
 #################################################################################
@@ -900,6 +958,50 @@ def search_graph_degree(people, phones, points, calls, meetings):
 	
 	dict['max_value'] = max_value
 	return dict
+
+
+def search_closeness(node, people, phones, points, calls, meetings):
+	value = 0
+	number_of_nodes = len(people) + len(phones) + len(points) - 1
+	
+	G = get_graph(people, phones, points, calls, meetings)
+	
+	for dest in G.nodes:
+		if(node != dest):
+			try:
+				path = nx.shortest_path(G, source=node , target=dest)
+			except nx.NetworkXNoPath:
+				path = []
+			value += len(path) - 1
+	
+	value = round((number_of_nodes / value), 2)
+	return value
+
+def search_graph_closeness(people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = search_closeness(person, people, phones, points, calls, meetings)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = search_closeness(phone, people, phones, points, calls, meetings)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = search_closeness(point, people, phones, points, calls, meetings)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+			
+	dict['max_value'] = max_value
+	return dict
+
 
 def get_graph(people, phones, points, calls, meetings):
 	G = nx.Graph()
