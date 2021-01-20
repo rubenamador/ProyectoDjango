@@ -472,6 +472,35 @@ class HarmonyGraph(ListView):
 		
 		return context
 
+class KatzGraph(ListView):
+	model = Graph
+	template_name = 'graphs/centrality_graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(KatzGraph, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		
+		dict = search_graph_katz(people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = calls
+		context['meetings'] = meetings
+		context['ownerships'] = phones
+		context['max_value'] = dict['max_value']
+		
+		return context
+
+
 #################################################################################
 """ Functions used in views """
 #################################################################################
@@ -1213,6 +1242,61 @@ def search_graph_harmony(people, phones, points, calls, meetings):
 		if(value > max_value):
 			max_value = value
 			
+	dict['max_value'] = max_value
+	return dict
+
+def search_katz_centrality(node, people, phones, points, calls, meetings):
+	nodes_by_distance = {}
+	max_len = 0
+	
+	G = get_graph(people, phones, points, calls, meetings)
+	
+	for dest in G.nodes:
+		if(node != dest):
+			try:
+				path = nx.shortest_path(G, source=node , target=dest)
+				if((len(path) - 1) > max_len):
+					max_len = len(path) - 1
+			except nx.NetworkXNoPath:
+				path = []
+			if(nodes_by_distance.get(str(len(path) - 1)) == None):
+				nodes_by_distance[str(len(path) - 1)] = []
+			nodes_by_distance[str(len(path) - 1)].append(dest)
+	
+	alfa = 0.5
+	value = 0
+	for i in range(max_len):
+		if(nodes_by_distance.get(str(i)) != None):
+			value += math.pow(alfa, i) * len(nodes_by_distance[str(i)])
+			#print(math.pow(alfa, i) * len(nodes_by_distance[str(i)]))
+			#print(nodes_by_distance[str(i)])
+		
+	value = round(value, 2)
+	return value
+	
+def search_graph_katz(people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	
+	for person in people:
+		value = search_katz_centrality(person, people, phones, points, calls, meetings)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = search_katz_centrality(phone, people, phones, points, calls, meetings)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = search_katz_centrality(point, people, phones, points, calls, meetings)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
 	dict['max_value'] = max_value
 	return dict
 

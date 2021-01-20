@@ -62,7 +62,7 @@
 	<a class="btn btn-danger">Centralidad de Katz</a>
 	<a class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
 	<ul class="dropdown-menu" style="background-color:#d9534f">
-		<li><a id="katz_path" href="#">Representar Grafo Completo</a></li>
+		<li><a id="katz_path" href="{% url 'Graphs:graphKatz' graph.id %}">Representar Grafo Completo</a></li>
 	</ul>
 </div>
 {% endblock %}
