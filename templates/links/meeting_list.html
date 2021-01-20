@@ -3,6 +3,17 @@
 
 <!-- Bloque de cabecera -->
 {% block header %}
+<style>
+div.btn-group btn-group-justified {
+	position: absolute;
+	right: 200px;
+}
+</style>
+
+<div class="btn-group btn-group-justified" style="width:100%">
+	<a href="{% url 'Links:deleteAllMeetings' %}" class="btn btn-default">Borrar reuniones</a>
+</div>
+<div style="visibility: hidden">salto de linea</div>
 {% endblock %}
 
 <!-- Bloque del contenido -->	
@@ -27,6 +38,9 @@
 				<a class="btn btn-primary btn-sm" 
 				href="{% url 'Links:editMeeting' meeting.id %}"
 				>Editar</a>
+				<a class="btn btn-danger btn-sm" 
+				href="{% url 'Links:deleteMeeting' meeting.id %}"
+				>Eliminar</a>
 			</td>
 		</tr>
 		{% endfor %}

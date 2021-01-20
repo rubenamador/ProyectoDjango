@@ -1,0 +1,18 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<form method="post">
+	{% csrf_token %}
+	<h3>¿Desea eliminar el registro de la llamada {{ object.id }}?</h3>
+	<button class="btn btn-danger" type="submit">Eliminar</button>
+	<a class="btn btn-default" href="{% url 'Links:listCall' %}">Cancelar</a>
+</form>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

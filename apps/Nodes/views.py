@@ -60,8 +60,30 @@ class PersonDelete(DeleteView):
 	template_name = 'nodes/person_delete.html'
 	success_url = reverse_lazy('Nodes:listPerson')
 
+class PhoneDelete(DeleteView):
+	model = Phone
+	template_name = 'nodes/phone_delete.html'
+	success_url = reverse_lazy('Nodes:listPhone')
+
+class MeetingPointDelete(DeleteView):
+	model = MeetingPoint
+	template_name = 'nodes/meeting_point_delete.html'
+	success_url = reverse_lazy('Nodes:listMeetingPoint')
+
 def all_people_delete(request):
 	if request.method == 'POST':
 		Person.objects.all().delete()
 		return redirect('Nodes:listPerson')
 	return render(request, 'nodes/all_people_delete.html')
+
+def all_phones_delete(request):
+	if request.method == 'POST':
+		Phone.objects.all().delete()
+		return redirect('Nodes:listPhone')
+	return render(request, 'nodes/all_phones_delete.html')
+
+def all_meeting_points_delete(request):
+	if request.method == 'POST':
+		MeetingPoint.objects.all().delete()
+		return redirect('Nodes:listMeetingPoint')
+	return render(request, 'nodes/all_meeting_points_delete.html')

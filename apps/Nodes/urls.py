@@ -1,8 +1,8 @@
 from django.urls import re_path
 from apps.Nodes.views import PersonList, PersonCreate, PersonUpdate, PersonDelete
-from apps.Nodes.views import PhoneList, PhoneCreate, PhoneUpdate
-from apps.Nodes.views import MeetingPointList, MeetingPointCreate, MeetingPointUpdate
-from apps.Nodes.views import all_people_delete
+from apps.Nodes.views import PhoneList, PhoneCreate, PhoneUpdate, PhoneDelete
+from apps.Nodes.views import MeetingPointList, MeetingPointCreate, MeetingPointUpdate, MeetingPointDelete
+from apps.Nodes.views import all_people_delete, all_phones_delete, all_meeting_points_delete
 
 urlpatterns = [
 	re_path(r'^newPerson$', PersonCreate.as_view(), name='newPerson'),
@@ -15,5 +15,9 @@ urlpatterns = [
 	re_path(r'^editPhone/(?P<pk>[\w|\W]+)/$', PhoneUpdate.as_view(), name='editPhone'),
 	re_path(r'^editMeetingPoint/(?P<pk>[\w|\W]+)/$', MeetingPointUpdate.as_view(), name='editMeetingPoint'),
 	re_path(r'^deletePerson/(?P<pk>[\w|\W]+)/$', PersonDelete.as_view(), name='deletePerson'),
+	re_path(r'^deletePhone/(?P<pk>[\w|\W]+)/$', PhoneDelete.as_view(), name='deletePhone'),
+	re_path(r'^deleteMeetingPoint/(?P<pk>[\w|\W]+)/$', MeetingPointDelete.as_view(), name='deleteMeetingPoint'),
 	re_path(r'^deleteAllPeople$', all_people_delete, name='deleteAllPeople'),
+	re_path(r'^deleteAllPhones$', all_phones_delete, name='deleteAllPhones'),
+	re_path(r'^deleteAllMeetingPoints$', all_meeting_points_delete, name='deleteAllMeetingPoints'),
 ]
