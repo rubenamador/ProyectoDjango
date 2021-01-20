@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.http import HttpResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from rest_framework.views import APIView
 
 from apps.Nodes.forms import PersonForm, PhoneForm, MeetingPointForm
 from apps.Nodes.models import Person, Phone, MeetingPoint
+from apps.Nodes.serializers import PersonSerializer, PhoneSerializer, MeetingPointSerializer
+
+import json
 
 # Create your views here.
 
@@ -75,7 +80,7 @@ def all_people_delete(request):
 		Person.objects.all().delete()
 		return redirect('Nodes:listPerson')
 	return render(request, 'nodes/all_people_delete.html')
-
+	
 def all_phones_delete(request):
 	if request.method == 'POST':
 		Phone.objects.all().delete()
@@ -87,3 +92,30 @@ def all_meeting_points_delete(request):
 		MeetingPoint.objects.all().delete()
 		return redirect('Nodes:listMeetingPoint')
 	return render(request, 'nodes/all_meeting_points_delete.html')
+
+class PersonAPI(APIView):
+	serializer = PersonSerializer
+	
+	def get(self, request, format=None):
+		list = Person.objects.all()
+		response = self.serializer(list, many=True)
+		
+		return HttpResponse(json.dumps(response.data), content_type='application/json')
+
+class PhoneAPI(APIView):
+	serializer = PhoneSerializer
+	
+	def get(self, request, format=None):
+		list = Phone.objects.all()
+		response = self.serializer(list, many=True)
+		
+		return HttpResponse(json.dumps(response.data), content_type='application/json')
+
+class MeetingPointAPI(APIView):
+	serializer = MeetingPointSerializer
+	
+	def get(self, request, format=None):
+		list = MeetingPoint.objects.all()
+		response = self.serializer(list, many=True)
+		
+		return HttpResponse(json.dumps(response.data), content_type='application/json')

@@ -1,7 +1,7 @@
 from django.urls import re_path
-from apps.Nodes.views import PersonList, PersonCreate, PersonUpdate, PersonDelete
-from apps.Nodes.views import PhoneList, PhoneCreate, PhoneUpdate, PhoneDelete
-from apps.Nodes.views import MeetingPointList, MeetingPointCreate, MeetingPointUpdate, MeetingPointDelete
+from apps.Nodes.views import PersonList, PersonCreate, PersonUpdate, PersonDelete, PersonAPI
+from apps.Nodes.views import PhoneList, PhoneCreate, PhoneUpdate, PhoneDelete, PhoneAPI
+from apps.Nodes.views import MeetingPointList, MeetingPointCreate, MeetingPointUpdate, MeetingPointDelete, MeetingPointAPI
 from apps.Nodes.views import all_people_delete, all_phones_delete, all_meeting_points_delete
 
 urlpatterns = [
@@ -20,4 +20,7 @@ urlpatterns = [
 	re_path(r'^deleteAllPeople$', all_people_delete, name='deleteAllPeople'),
 	re_path(r'^deleteAllPhones$', all_phones_delete, name='deleteAllPhones'),
 	re_path(r'^deleteAllMeetingPoints$', all_meeting_points_delete, name='deleteAllMeetingPoints'),
+	re_path(r'^apiPerson$', PersonAPI.as_view(), name='apiPerson'),
+	re_path(r'^apiPhone$', PhoneAPI.as_view(), name='apiPhone'),
+	re_path(r'^apiMeetingPoint$', MeetingPointAPI.as_view(), name='apiMeetingPoint'),
 ]

@@ -1,6 +1,6 @@
 from django.urls import re_path
-from apps.Links.views import CallList, CallCreate, CallUpdate, CallDelete
-from apps.Links.views import MeetingList, MeetingCreate, MeetingUpdate, MeetingDelete
+from apps.Links.views import CallList, CallCreate, CallUpdate, CallDelete, CallAPI
+from apps.Links.views import MeetingList, MeetingCreate, MeetingUpdate, MeetingDelete, MeetingAPI
 from apps.Links.views import all_calls_delete, all_meetings_delete
 
 urlpatterns = [
@@ -14,4 +14,6 @@ urlpatterns = [
 	re_path(r'^deleteMeeting/(?P<pk>[\w|\W]+)/$', MeetingDelete.as_view(), name='deleteMeeting'),
 	re_path(r'^deleteAllCalls$', all_calls_delete, name='deleteAllCalls'),
 	re_path(r'^deleteAllMeetings$', all_meetings_delete, name='deleteAllMeetings'),
+	re_path(r'^apiCall$', CallAPI.as_view(), name='apiCall'),
+	re_path(r'^apiMeeting$', MeetingAPI.as_view(), name='apiMeeting'),
 ]
