@@ -9,6 +9,7 @@ from apps.Graphs.views import PathForm, PathView
 from apps.Graphs.views import ClosenessGraph
 from apps.Graphs.views import BetweenessGraph
 from apps.Graphs.views import EigenvectorGraph
+from apps.Graphs.views import HarmonyGraph
 
 urlpatterns = [
 	re_path(r'^newGraph$', GraphCreate.as_view(), name='newGraph'),
@@ -29,4 +30,5 @@ urlpatterns = [
 	re_path(r'^graphCloseness/(?P<pk>[\w|\W]+)/$', ClosenessGraph.as_view(), name='graphCloseness'),
 	re_path(r'^graphBetweeness/(?P<pk>[\w|\W]+)/$', BetweenessGraph.as_view(), name='graphBetweeness'),
 	re_path(r'^graphEigenvector/(?P<pk>[\w|\W]+)/$', EigenvectorGraph.as_view(), name='graphEigenvector'),
+	re_path(r'^graphHarmony/(?P<pk>[\w|\W]+)/$', HarmonyGraph.as_view(), name='graphHarmony'),
 ]
