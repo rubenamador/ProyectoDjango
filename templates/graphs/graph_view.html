@@ -2,6 +2,69 @@
 {% extends 'base/base.html' %}
 
 {% block header %}
+
+<div class="btn-group">
+	<a class="btn btn-default">Grado</a>
+	<a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+	<ul class="dropdown-menu">
+		<li><a href="#">Seleccionar Nodo</a></li>
+		<li><a href="#">Representar Grafo Completo</a></li>
+	</ul>
+</div>
+
+<style>
+#close_path:hover {
+	background-color: #b15315;
+}
+#between_path:hover {
+	background-color: #398439;
+}
+#eigenv_path:hover {
+	background-color: #269abc;
+}
+#harmonic_path:hover {
+	background-color: #d58512;
+}
+#katz_path:hover {
+	background-color: #ac2925;
+}
+</style>
+<div class="btn-group">
+	<a class="btn btn-primary">Cercania</a>
+	<a class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+	<ul class="dropdown-menu" style="background-color:#df691a">
+		<li><a id="close_path" href="#">Buscar Camino</a></li>
+		<li><a id="close_path" href="#">Representar Grafo Completo</a></li>
+	</ul>
+</div>
+<div class="btn-group">
+	<a class="btn btn-success">Intermediacion</a>
+	<a class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+	<ul class="dropdown-menu" style="background-color:#5cb85c">
+		<li><a id="between_path" href="#">Representar Grafo Completo</a></li>
+	</ul>
+</div>
+<div class="btn-group">
+	<a class="btn btn-info">Valor propio</a>
+	<a class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+	<ul class="dropdown-menu" style="background-color:#5bc0de">
+		<li><a id="eigenv_path" href="#">Representar Grafo Completo</a></li>
+	</ul>
+</div>
+<div class="btn-group">
+	<a class="btn btn-warning">Centralidad armonica</a>
+	<a class="btn btn-warning dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+	<ul class="dropdown-menu" style="background-color:#f0ad4e">
+		<li><a id="harmonic_path" href="#">Representar Grafo Completo</a></li>
+	</ul>
+</div>
+<div class="btn-group">
+	<a class="btn btn-danger">Centralidad de Katz</a>
+	<a class="btn btn-danger dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+	<ul class="dropdown-menu" style="background-color:#d9534f">
+		<li><a id="katz_path" href="#">Representar Grafo Completo</a></li>
+	</ul>
+</div>
 {% endblock %}
 
 <!-- Bloque del contenido -->
