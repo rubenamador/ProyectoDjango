@@ -1,0 +1,318 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->
+{% block content %}
+<script>
+	var people = [];
+	var phones = [];
+	var points = [];
+</script>
+
+{% for person in people %}
+	<script>
+		people.push("{{ person.name }}");
+	</script>
+{% endfor %}
+
+{% for phone in phones %}
+	<script>
+		phones.push("{{ phone.number }}");
+	</script>
+{% endfor %}
+
+{% for point in points %}
+	<script>
+		points.push("{{ point.place }}");
+	</script>
+{% endfor %}
+
+<script>
+	var calls = [];
+	var phones_1 = [];
+	var phones_2 = [];
+	
+	var meetings = [];
+	var meeting_people = [];
+	var meeting_points = [];
+</script>
+
+{% for call in calls %}
+<script>
+	
+	calls.push("{{ call }}");
+	phones_1.push("{{ call.phone_1.number }}");
+	phones_2.push("{{ call.phone_2.number }}");
+</script>
+{% endfor %}
+
+{% for meeting in meetings %}
+<script>
+	
+	meetings.push("{{ meeting }}");
+	meeting_people.push("{{ meeting.person.name }}");
+	meeting_points.push("{{ meeting.point.place }}");
+</script>
+{% endfor %}
+
+{% for ownership in ownerships %}
+<script>
+	
+	ownerships.push("{{ ownership }}");
+	ownership_number.push("{{ ownership.number }}");
+	ownership_owner.push("{{ ownership.owner }}");
+</script>
+{% endfor %}
+
+<p id="demo"></p>
+
+<canvas id="network" width=1135 height=500 style="background-color:white;"></canvas>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+
+<script>
+	graph = {};
+	graph["nodes"] = [];
+	graph["links"] = [];
+	
+	lista = "{{ object_list }}";
+	//document.getElementById("list1").value = lista;
+	//document.getElementById("list2").value = lista;
+	//console.log(document.getElementById("list1").value);
+</script>
+
+
+{% for person in people %}
+	<!-- <div>{{ link.id }}</div> -->
+	<script>
+		//nodo = document.getElementById("node").textContent;
+		nodo = "{{ person.name }} ({{ person.id }})";
+		graph["nodes"].push({"name": nodo, "type": "person"});
+		//alert('llega aqui 1');
+	</script>
+{% endfor %}
+
+{% for phone in phones %}
+	<!-- <div>{{ link.id }}</div> -->
+	<script>
+		//nodo = document.getElementById("node").textContent;)
+		nodo = "{{ phone.number }}";
+		graph["nodes"].push({"name": nodo, "type": "phone"});
+	</script>
+		
+	<!--{% for person in people %}
+	{% if phone.owner == person %}
+	<script>
+		//source = "{{ phone.number }}";
+		//dest = "{{ phone.owner.name }} ({{ phone.owner.id }})";
+		//graph["links"].push({"source": source, "target": dest, "type": "ownership"});
+		//alert('llega aqui 1');
+	</script>
+	{% endif %}
+	{% endfor %} -->
+{% endfor %}
+
+{% for point in points %}
+	<!-- <div>{{ link.id }}</div> -->
+	<script>
+		//nodo = document.getElementById("node").textContent;)
+		nodo = "{{ point.place }} ({{ point.id }})";
+		graph["nodes"].push({"name": nodo, "type": "point"});
+		//alert('llega aqui 1');
+	</script>
+{% endfor %}
+
+{% for call in calls %}
+	<!-- <div>{{ link.id }}</div> -->
+	<script>
+		//nodo = document.getElementById("node").textContent;)
+		source = "{{ call.phone_1.number }}";
+		dest = "{{ call.phone_2.number }}";
+		graph["links"].push({"source": source, "target": dest, "type": "call"});
+		//alert('llega aqui 2');
+	</script>
+{% endfor %}
+
+{% for meeting in meetings %}
+	<!-- <div>{{ link.id }}</div> -->
+	<script>
+		//nodo = document.getElementById("node").textContent;)
+		source = "{{ meeting.person.name }} ({{ meeting.person.id }})";
+		dest = "{{ meeting.point.place }} ({{ meeting.point.id }})";
+		graph["links"].push({"source": source, "target": dest, "type": "meeting"});
+		//alert('llega aqui 2');
+	</script>
+{% endfor %}
+
+{% for ownership in ownerships %}
+	<script>
+		source = "{{ ownership.number }}";
+		dest = "{{ ownership.owner.name }} ({{ ownership.owner.id }})";
+		graph["links"].push({"source": source, "target": dest, "type": "ownership"});
+		//alert('llega aqui 1');
+	</script>
+{% endfor %}
+
+
+<script>
+/* global d3 */
+
+//Tutorial d3.js
+//https://www.youtube.com/watch?v=te3MYUBD0m8
+
+console.log(graph);
+
+var queryset = "{{ people }}";
+console.log(queryset);
+
+var canvas = d3.select("#network"),
+	width = canvas.attr("width"),
+	height = canvas.attr("height"),
+	ctx = canvas.node().getContext("2d"),
+	r = 30,
+	color = d3.scaleOrdinal(d3.schemeCategory20),
+	simulation = d3.forceSimulation()
+		.force("x", d3.forceX(width/2))
+		.force("y", d3.forceY(height/2))
+		.force("collide", d3.forceCollide(r+30))
+		.force("charge", d3.forceManyBody()
+			.strength(-2300))
+		.on("tick", update)
+		.force("link", d3.forceLink()
+			.id(function (d) { return d.name; }));
+
+//canvas.node().addEventListener("dblclick", myFunction);
+
+//Ejemplo Zoom: https://bl.ocks.org/puzzler10/4438752bb93f45dc5ad5214efaa12e4a
+
+nodes = simulation.nodes(graph.nodes);
+simulation.force("link")
+	.links(graph.links);
+
+//graph.nodes.forEach(function (d) {
+//	d.x = Math.random()*width;
+//	d.y = Math.random()*height;
+//});
+
+
+canvas
+	.call(
+		d3.zoom()
+			.on("zoom", zoom),
+		d3.drag()
+			.container(canvas.node())
+			.subject(dragsubject)
+			.on("start", dragstarted)
+			.on("drag", dragged));
+	//.on("end", dragended));//Si comento esto solo se mueve un nodo
+
+function update() {
+	ctx.clearRect(0, 0, width, height);
+	
+	ctx.globalAlpha = 0.9;
+	graph.links.forEach(drawLink);
+	
+	ctx.globalAlpha = 1.0;
+	graph.nodes.forEach(drawNode);
+	
+	for (let i = 0; i < graph.links.length; i++) {
+		//console.log(graph.links[i].source);
+	}
+	//graph.nodes.forEach.ondblclick = function() {myFunction()};
+	//graph.nodes.addEventListener("dblclick", myFunction);
+}
+
+function dragsubject() {
+	return simulation.find(d3.event.x, d3.event.y);
+}
+
+function dragstarted() {
+	if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+	d3.event.subject.fx = d3.event.subject.x;
+	d3.event.subject.fy = d3.event.subject.y;
+}
+
+function dragged() {
+	d3.event.subject.fx = d3.event.x;
+	d3.event.subject.fy = d3.event.y;
+}
+
+function dragended() {
+	if (!d3.event.active) simulation.alphaTarget(0);
+	d3.event.subject.fx = null;
+	d3.event.subject.fy = null;
+}
+
+function zoom() {
+	var transform = d3.event.transform;
+	ctx.save();
+	ctx.clearRect(0, 0, width, height);
+	ctx.translate(transform.x, transform.y);
+	ctx.scale(transform.k, transform.k);
+	update();
+	ctx.restore();
+}
+
+function drawNode(d) {
+	//console.log("D");
+	//console.log(d.name);
+	color = "";
+	if(d.type == "phone"){
+		color = "DodgerBlue"
+	}else if(d.type == "person"){
+		color = "Orange"
+	}else if(d.type == "point"){
+		color = "Green"
+	}
+	
+	ctx.beginPath();
+	ctx.fillStyle = color;
+	ctx.moveTo(d.x, d.y);
+	ctx.arc(d.x, d.y, r, 0, Math.PI*2);
+	ctx.fill();
+	ctx.fillStyle = 'Black';
+	ctx.font = "15px Georgia";
+	ctx.fillText(d.name, d.x, d.y + 30);
+}
+
+function drawLink(l) {
+	ctx.beginPath();
+	color = "";
+	if(l.type == "call"){
+		color = "DodgerBlue"
+	}else if(l.type == "meeting"){
+		color = "Orange"
+	}else if(l.type == "ownership"){
+		color = "Gold"
+	}
+	
+	
+	ctx.strokeStyle = color;
+	console.log("Color:" + ctx.strokeStyle);
+	ctx.moveTo(l.source.x, l.source.y);
+	ctx.lineTo(l.target.x, l.target.y);
+	ctx.stroke();
+}
+
+//document.getElementById("network").ondblclick = function() {myFunction()};
+
+/*
+function myFunction() {
+//Mostrar un menu
+console.log("aqui");
+document.getElementById("node-menu").style = "visibility:visible";
+//console.log("d.node");
+}*/
+
+update();
+
+</script>
+
+
+{% endblock %}
+
+{% block footer %}
+<div id="graph">Grafo: {{ graph }}</div>
+{% endblock %}

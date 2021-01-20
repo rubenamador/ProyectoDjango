@@ -32,6 +32,9 @@ div.btn-group btn-group-justified {
 		<tr>
 			<td>{{ graph.id }}</td>
 			<td>
+				<a class="btn btn-info btn-sm" 
+				href="{% url 'Graphs:viewGraph' graph.id %}"
+				>Ver</a>
 				<a class="btn btn-primary btn-sm" 
 				href="{% url 'Graphs:editGraph' graph.id %}"
 				>Editar</a>
