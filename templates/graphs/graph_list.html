@@ -12,7 +12,7 @@ div.btn-group btn-group-justified {
 
 <div class="btn-group btn-group-justified" style="width:100%">
 	<a href="{% url 'Graphs:deleteAllGraphs' %}" class="btn btn-default">Borrar grafos</a>
-	<a href="#" class="btn btn-default">Generar grafo aleatorio</a>
+	<a href="{% url 'Graphs:createRandomGraph' %}" class="btn btn-default">Generar grafo aleatorio</a>
 </div>
 <div style="visibility: hidden">salto de linea</div>
 {% endblock %}

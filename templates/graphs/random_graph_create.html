@@ -1,0 +1,18 @@
+<!-- Herencia del template base -->	
+{% extends 'base/base.html' %}
+
+{% block header %}
+{% endblock %}
+
+<!-- Bloque del contenido -->	
+{% block content %}
+<form method="post">
+	{% csrf_token %}
+	<h3>¿Desea generar nuevos elementos del grafo aleatoriamente?</h3>
+	<button class="btn btn-primary" type="submit">Generar</button>
+	<a class="btn btn-default" href="{% url 'Graphs:listGraph' %}">Cancelar</a>
+</form>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
