@@ -7,6 +7,7 @@ from apps.Graphs.views import DegreeForm, DegreePersonView, DegreePhoneView, Deg
 from apps.Graphs.views import DegreeGraph
 from apps.Graphs.views import PathForm, PathView
 from apps.Graphs.views import ClosenessGraph
+from apps.Graphs.views import BetweenessGraph
 
 urlpatterns = [
 	re_path(r'^newGraph$', GraphCreate.as_view(), name='newGraph'),
@@ -25,4 +26,5 @@ urlpatterns = [
 	re_path(r'^formPath/(?P<pk>[\w|\W]+)/$', PathForm.as_view(), name='formPath'),
 	re_path(r'^viewPath/(?P<pk>[\w|\W]+)/(?P<pk2>[\w|\W]+)/(?P<pk3>[\w|\W]+)/$', PathView.as_view(), name='viewPath'),
 	re_path(r'^graphCloseness/(?P<pk>[\w|\W]+)/$', ClosenessGraph.as_view(), name='graphCloseness'),
+	re_path(r'^graphBetweeness/(?P<pk>[\w|\W]+)/$', BetweenessGraph.as_view(), name='graphBetweeness'),
 ]

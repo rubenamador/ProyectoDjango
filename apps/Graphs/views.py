@@ -388,6 +388,34 @@ class ClosenessGraph(ListView):
 		
 		return context
 
+class BetweenessGraph(ListView):
+	model = Graph
+	template_name = 'graphs/centrality_graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(BetweenessGraph, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		
+		dict = search_graph_betweeness(people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = calls
+		context['meetings'] = meetings
+		context['ownerships'] = phones
+		context['max_value'] = dict['max_value']
+		
+		return context
+
 #################################################################################
 """ Functions used in views """
 #################################################################################
@@ -1002,6 +1030,41 @@ def search_graph_closeness(people, phones, points, calls, meetings):
 	dict['max_value'] = max_value
 	return dict
 
+def search_betweeness(node, paths):
+	betweeness_paths = []
+	for path in paths:
+		for i in range(len(path) - 2):
+			if(path[i + 1] == node):
+				betweeness_paths.append(path)
+	
+	value = len(betweeness_paths)
+	return value
+	
+def search_graph_betweeness(people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	paths = get_all_paths(people, phones, points, calls, meetings)
+	for person in people:
+		value = search_betweeness(person, paths)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = search_betweeness(phone, paths)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = search_betweeness(point, paths)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
 
 def get_graph(people, phones, points, calls, meetings):
 	G = nx.Graph()
@@ -1055,6 +1118,35 @@ def add_nodes_of_path(path, dict, calls, meetings, phones):
 					for meeting in meetings:
 						if(meeting.point == path[i] and meeting.person == path[i-1]):
 							dict['meetings'].append(meeting)
+
+def get_all_paths(people, phones, points, calls, meetings):
+	G = get_graph(people, phones, points, calls, meetings)
+	paths = []
+	
+	get_all_paths_between_models(G, paths, people, people)
+	get_all_paths_between_models(G, paths, people, phones)
+	get_all_paths_between_models(G, paths, people, points)
+	
+	get_all_paths_between_models(G, paths, phones, phones)
+	get_all_paths_between_models(G, paths, phones, people)
+	get_all_paths_between_models(G, paths, phones, points)
+	
+	get_all_paths_between_models(G, paths, points, points)
+	get_all_paths_between_models(G, paths, points, people)
+	get_all_paths_between_models(G, paths, points, phones)
+	
+	return paths
+	
+def get_all_paths_between_models(G, paths, nodes_type1, nodes_type2):
+	for p1 in nodes_type1:
+		for p2 in nodes_type2:
+			if(p1 != p2):
+				try:
+					path = nx.shortest_path(G, source=p1 , target=p2)
+				except nx.NetworkXNoPath:
+					path = []
+				if(len(path) > 0):
+					paths.append(path)
 
 def quit_repeat_items(dict):
 	for key in dict.keys():

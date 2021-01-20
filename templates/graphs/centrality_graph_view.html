@@ -41,7 +41,7 @@
 	<a class="btn btn-success">Intermediacion</a>
 	<a class="btn btn-success dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
 	<ul class="dropdown-menu" style="background-color:#5cb85c">
-		<li><a id="between_path" href="#">Representar Grafo Completo</a></li>
+		<li><a id="between_path" href="{% url 'Graphs:graphBetweeness' graph.id %}">Representar Grafo Completo</a></li>
 	</ul>
 </div>
 <div class="btn-group">
