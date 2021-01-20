@@ -416,6 +416,34 @@ class BetweenessGraph(ListView):
 		
 		return context
 
+class EigenvectorGraph(ListView):
+	model = Graph
+	template_name = 'graphs/centrality_graph_view.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(EigenvectorGraph, self).get_context_data(**kwargs)
+		pk = self.kwargs.get('pk', 0)
+		graph = self.model.objects.get(id=pk)
+		context['graph'] = graph
+		
+		people = Person.objects.all()
+		phones = Phone.objects.all()
+		points = MeetingPoint.objects.all()
+		calls = Call.objects.all()
+		meetings = Meeting.objects.all()
+		
+		dict = search_graph_eigenvector(people, phones, points, calls, meetings)
+		
+		context['people'] = dict['people']
+		context['phones'] = dict['phones']
+		context['points'] = dict['points']
+		context['calls'] = calls
+		context['meetings'] = meetings
+		context['ownerships'] = phones
+		context['max_value'] = dict['max_value']
+		
+		return context
+
 #################################################################################
 """ Functions used in views """
 #################################################################################
@@ -1066,6 +1094,57 @@ def search_graph_betweeness(people, phones, points, calls, meetings):
 	dict['max_value'] = max_value
 	return dict
 
+def search_eigenvector(node, people, phones, points, calls, meetings):
+	all_degrees_sum = get_degrees_sum(people, phones, points, calls, meetings)
+	all_eigenvalues_sum = get_eigenvalues_sum(all_degrees_sum, people, phones, points, calls, meetings)
+	
+	sum = 0
+	for call in calls:
+		if(call.phone_1 == node):
+			sum += get_eigenvalue(call.phone_2, all_degrees_sum, people, phones, points, calls, meetings)
+		if(call.phone_2 == node):
+			sum += get_eigenvalue(call.phone_1, all_degrees_sum, people, phones, points, calls, meetings)
+			
+	for meeting in meetings:
+		if(meeting.person == node):
+			sum += get_eigenvalue(meeting.point, all_degrees_sum, people, phones, points, calls, meetings)
+		if(meeting.point == node):
+			sum += get_eigenvalue(meeting.person, all_degrees_sum, people, phones, points, calls, meetings)
+			
+	for phone in phones:
+		if(phone.owner == node):
+			sum += get_eigenvalue(phone, all_degrees_sum, people, phones, points, calls, meetings)
+		if(phone == node):
+			sum += get_eigenvalue(phone.owner, all_degrees_sum, people, phones, points, calls, meetings)
+	
+	value = round((sum / all_eigenvalues_sum), 2)	
+	return value
+	
+def search_graph_eigenvector(people, phones, points, calls, meetings):
+	dict = {}
+	dict['people'] = []
+	dict['phones'] = []
+	dict['points'] = []
+	max_value = 0
+	for person in people:
+		value = search_eigenvector(person, people, phones, points, calls, meetings)
+		dict['people'].append({'id':person.id, 'name':person.name, 'surname':person.surname, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for phone in phones:
+		value = search_eigenvector(phone, people, phones, points, calls, meetings)
+		dict['phones'].append({'number':phone.number, 'owner':phone.owner, 'value':value})
+		if(value > max_value):
+			max_value = value
+	for point in points:
+		value = search_eigenvector(point, people, phones, points, calls, meetings)
+		dict['points'].append({'id':point.id, 'place':point.place, 'date':point.date, 'time':point.time, 'value':value})
+		if(value > max_value):
+			max_value = value
+	
+	dict['max_value'] = max_value
+	return dict
+
 def get_graph(people, phones, points, calls, meetings):
 	G = nx.Graph()
 	
@@ -1147,6 +1226,64 @@ def get_all_paths_between_models(G, paths, nodes_type1, nodes_type2):
 					path = []
 				if(len(path) > 0):
 					paths.append(path)
+
+def get_degrees_sum(people, phones, points, calls, meetings):
+	sum = 0
+	
+	for person in people:
+		value = search_degree(person, phones, calls, meetings)
+		sum += value
+	for phone in phones:
+		value = search_degree(phone, phones, calls, meetings)
+		sum += value
+	for point in points:
+		value = search_degree(point, phones, calls, meetings)
+		sum += value
+	
+	return sum
+
+def get_eigenvalues_sum(all_degrees_sum, people, phones, points, calls, meetings):
+	sum = 0
+	
+	for person in people:
+		eigenvalue = get_eigenvalue(person, all_degrees_sum, people, phones, points, calls, meetings)
+		sum += eigenvalue
+	for phone in phones:
+		eigenvalue = get_eigenvalue(phone, all_degrees_sum, people, phones, points, calls, meetings)
+		sum += eigenvalue
+	for point in points:
+		eigenvalue = get_eigenvalue(point, all_degrees_sum, people, phones, points, calls, meetings)
+		sum += eigenvalue
+	
+	return sum
+
+def get_eigenvalue(node, all_degrees_value, people, phones, points, calls, meetings):
+	type_node = str(node._meta.model)
+	
+	dict = {}
+	if(type_node == "<class 'apps.Nodes.models.Person'>"):
+		dict = search_person_degree(node, people, phones, points, calls, meetings)
+	if(type_node == "<class 'apps.Nodes.models.Phone'>"):
+		dict = search_phone_degree(node, people, phones, points, calls, meetings)
+	if(type_node == "<class 'apps.Nodes.models.MeetingPoint'>"):
+		dict = search_point_degree(node, people, phones, points, calls, meetings)
+	
+	sum = 0
+	for person in dict['people']:
+		if(person != node):
+			d = search_person_degree(person, people, phones, points, calls, meetings)
+			sum += d['value']
+	for phone in dict['phones']:
+		if(phone != node):
+			d = search_phone_degree(phone, people, phones, points, calls, meetings)
+			sum += d['value']
+	for point in dict['points']:
+		if(point != node):
+			d = search_point_degree(point, people, phones, points, calls, meetings)
+			sum += d['value']
+	
+	eigenvalue = round((sum / all_degrees_value), 2)
+	return eigenvalue
 
 def quit_repeat_items(dict):
 	for key in dict.keys():
