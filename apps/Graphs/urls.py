@@ -1,4 +1,5 @@
 from django.urls import re_path
+from apps.Graphs.views import main_page
 from apps.Graphs.views import GraphList, GraphCreate, GraphUpdate, GraphDelete, GraphAPI
 from apps.Graphs.views import all_graphs_delete
 from apps.Graphs.views import GraphView
@@ -13,6 +14,7 @@ from apps.Graphs.views import HarmonyGraph
 from apps.Graphs.views import KatzGraph
 
 urlpatterns = [
+	re_path(r'^$', main_page),
 	re_path(r'^newGraph$', GraphCreate.as_view(), name='newGraph'),
 	re_path(r'^listGraph$', GraphList.as_view(), name='listGraph'),
 	re_path(r'^editGraph/(?P<pk>[\w|\W]+)/$', GraphUpdate.as_view(), name='editGraph'),

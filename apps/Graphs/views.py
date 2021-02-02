@@ -24,6 +24,9 @@ import pickle
 
 # Create your views here.
 
+def main_page(request):
+	return render(request, 'graphs/graph_list.html')
+
 class GraphList(ListView):
 	model = Graph
 	template_name = 'graphs/graph_list.html'
